@@ -212,10 +212,10 @@ class _EasyLocalizationProvider extends InheritedWidget {
   /// Change app locale
   Future<void> setLocale(Locale locale) async {
     // Check old locale
-    if (locale != _localeState.locale) {
+    // if (locale != _localeState.locale) {
       assert(parent.supportedLocales.contains(locale));
       await _localeState.setLocale(locale);
-    }
+    // }
   }
 
   /// Clears a saved locale from device storage
