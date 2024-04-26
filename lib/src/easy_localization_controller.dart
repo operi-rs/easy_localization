@@ -67,10 +67,10 @@ class EasyLocalizationController extends ChangeNotifier {
     Locale deviceLocale, {
     Locale? fallbackLocale,
   }) {
-    final selectedLocale = supportedLocales.firstWhere(
-      (locale) => locale.supports(deviceLocale),
-      orElse: () => _getFallbackLocale(supportedLocales, fallbackLocale),
-    );
+    var selectedLocale = deviceLocale.bestMatch(supportedLocales);
+
+    selectedLocale ??= _getFallbackLocale(supportedLocales, fallbackLocale);
+
     return selectedLocale;
   }
 
@@ -182,6 +182,43 @@ class EasyLocalizationController extends ChangeNotifier {
 
 @visibleForTesting
 extension LocaleExtension on Locale {
+  Locale? bestMatch(List<Locale> locales) {
+    Locale? bestMatchLocale;
+    int? bestMatchWeight;
+
+    const int scriptCodeWeight = 2;
+    const int countryCodeWeight = 1;
+
+    for(Locale locale in locales) {
+      if (languageCode != locale.languageCode) {
+        continue;
+      }
+
+      int weight = 0;
+
+      if (locale.scriptCode != null && locale.scriptCode == scriptCode) {
+        weight += scriptCodeWeight;
+      }
+
+      if (locale.countryCode != null &&
+        locale.countryCode!.isNotEmpty &&
+        locale.countryCode == countryCode) {
+        weight += countryCodeWeight;
+      }
+
+      if(bestMatchWeight == null || weight > bestMatchWeight) {
+        bestMatchWeight = weight;
+        bestMatchLocale = locale;
+
+        if(bestMatchWeight == scriptCodeWeight + countryCodeWeight) {
+          break;
+        }
+      }
+    }
+
+    return bestMatchLocale;
+  }
+
   bool supports(Locale locale) {
     if (this == locale) {
       return true;
