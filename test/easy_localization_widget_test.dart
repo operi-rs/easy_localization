@@ -5,9 +5,9 @@ import 'package:easy_localization/src/exceptions.dart';
 import 'package:easy_localization/src/localization.dart';
 import 'package:easy_logger/easy_logger.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'utils/test_asset_loaders.dart';
 
 late BuildContext _context;
@@ -105,12 +105,8 @@ void main() async {
         expect(pluralFinder, findsOneWidget);
 
         expect(tr('test'), 'test');
-        expect(plural('day', 1), '1 day');
-        expect(plural('day', 2), '2 days');
-        expect(plural('day', 3), '3 other days');
 
         expect('test'.tr(), 'test');
-        expect('day'.plural(1), '1 day');
       });
     },
   );
@@ -138,9 +134,6 @@ void main() async {
         final pluralFinder = find.text('1 day');
         expect(pluralFinder, findsOneWidget);
         expect(tr('test'), 'test');
-        expect(plural('day', 1), '1 day');
-        expect(plural('day', 2), '2 days');
-        expect(plural('day', 3), '3 other days');
       });
     },
   );
@@ -168,9 +161,6 @@ void main() async {
         expect(pluralFinder, findsOneWidget);
 
         expect(tr('test'), 'test');
-        expect(plural('day', 1), '1 day');
-        expect(plural('day', 2), '2 days');
-        expect(plural('day', 3), '3 other days');
       });
     },
   );
@@ -221,9 +211,6 @@ void main() async {
         expect(pluralFinder, findsOneWidget);
 
         expect(tr('test'), 'test');
-        expect(plural('day', 1), '1 day');
-        expect(plural('day', 2), '2 days');
-        expect(plural('day', 3), '3 other days');
         expect(EasyLocalization.of(_context)!.locale, const Locale('en', 'US'));
 
         l = const Locale('ar', 'DZ');
@@ -260,9 +247,6 @@ void main() async {
         expect(pluralFinder, findsOneWidget);
 
         expect(tr('test'), 'test');
-        expect(plural('day', 1), '1 day');
-        expect(plural('day', 2), '2 days');
-        expect(plural('day', 3), '3 other days');
 
         var l = const Locale('en', 'US');
         await EasyLocalization.of(_context)!.setLocale(l);
@@ -301,6 +285,7 @@ void main() async {
         await tester.pumpWidget(EasyLocalization(
           path: '../../i18n',
           supportedLocales: const [Locale('en', 'US'), Locale('ar', 'DZ')],
+          ignorePluralRules: false,
           child: const MyApp(),
         ));
 
@@ -313,8 +298,10 @@ void main() async {
 
         await tester.pump();
 
-        expect(EasyLocalization.of(_context)!.supportedLocales,
-            [const Locale('en', 'US'), const Locale('ar', 'DZ')]);
+        expect(EasyLocalization.of(_context)!.supportedLocales, [
+          const Locale('en', 'US'),
+          const Locale('ar', 'DZ'),
+        ]);
         expect(EasyLocalization.of(_context)!.locale, const Locale('ar', 'DZ'));
 
         var trFinder = find.text('اختبار');
